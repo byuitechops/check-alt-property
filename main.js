@@ -1,4 +1,5 @@
 /*eslint-env node, es6*/
+/*eslint no-console:0*/
 /*eslint no-undef:0*/
 /*eslint no-unused-vars:0*/
 
@@ -10,6 +11,7 @@ const cheerio = require('cheerio'),
 module.exports = (course, stepCallback) => {
     course.addModuleReport('check-alt-property');
     var $,
+        imgsNoAlt = [],
         url = '/api/v1/courses/:' + course.info.courseId + '/pages',
         getPages = canvas.get(url, function (err, pages) {
             if (err) {
@@ -17,16 +19,17 @@ module.exports = (course, stepCallback) => {
                 return;
             }
             console.log('pages:', pages)
-            course.success('check-alt-property', 'successfully retrieved pages');
             return pages;
         });
-    /*for each page, read it and look for imgs*/
-    var allImages = getPages.map(page) {
-        return $('img');
-    }
-    /*for each image, find imgs without alts*/
-    var noAlts = allImages.filter(image) {
-        return !$('img').attr('alt')
-    }
+    var allImages = getPages.map(function (pages) {
+            return pages.filter('img');
+        }),
+        noAlts = allImages.filter(function (image) {
+            if (!$('img').hasClass('alt')) {
+                console.log('noAlt found!', image)
+                imgsNoAlt.concat(image)
+            }
+        });
     stepCallback(null, course);
+    return noAlts;
 };

@@ -25,5 +25,5 @@
         "url": "https://github.com/byuitechops/check-alt-property/issues"
     },
     "homepage": "https://github.com/byuitechops/check-alt-property#readme",
-    "childType": "postImport"
+    "childType": "preImport"
 }
