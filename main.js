@@ -1,28 +1,32 @@
 /*eslint-env node, es6*/
+/*eslint no-undef:0*/
+/*eslint no-unused-vars:0*/
 
-/* Module Description */
+/* Check for the alt properties on images */
 
-/* Put dependencies here */
-
-/* Include this line only if you are going to use Canvas API */
-// const canvas = require('canvas-wrapper');
-
-/* View available course object functions */
-// https://github.com/byuitechops/d2l-to-canvas-conversion-tool/blob/master/documentation/classFunctions.md
+const cheerio = require('cheerio'),
+    canvas = require('canvas-wrapper');
 
 module.exports = (course, stepCallback) => {
-    /* Create the module report so that we can access it later as needed.
-    This MUST be done at the beginning of each child module. */
-    course.addModuleReport('moduleName');
-
-    /* Used to log successful actions */
-    course.success('moduleName', 'moduleName successfully ...');
-
-    /* How to report an error (Replace "moduleName") */
-    // course.throwErr('moduleName', e);
-
-    /* You should never call the stepCallback with an error. We want the
-    whole program to run when testing so we can catch all existing errors */
-
+    course.addModuleReport('check-alt-property');
+    var $,
+        url = '/api/v1/courses/:' + course.info.courseId + '/pages',
+        getPages = canvas.get(url, function (err, pages) {
+            if (err) {
+                course.throwErr('check-alt-property', err);
+                return;
+            }
+            console.log('pages:', pages)
+            course.success('check-alt-property', 'successfully retrieved pages');
+            return pages;
+        });
+    /*for each page, read it and look for imgs*/
+    var allImages = getPages.map(page) {
+        return $('img');
+    }
+    /*for each image, find imgs without alts*/
+    var noAlts = allImages.filter(image) {
+        return !$('img').attr('alt')
+    }
     stepCallback(null, course);
 };
