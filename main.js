@@ -7,12 +7,6 @@
 module.exports = (course, stepCallback) => {
     course.addModuleReport('check-alt-property');
     /*Only want to look through pages that are HTML. not any web files such as js or jpgs.*/
-    function checkHTML(pages) {
-        pages.filter(function (page) {
-            return (page.ext === '.html');
-        });
-        console.log('PAGES:', pages)
-    }
 
     var pages = course.content,
         noAltImages = [];
