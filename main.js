@@ -2,34 +2,40 @@
 /*eslint no-console:0*/
 /*eslint no-undef:0*/
 /*eslint no-unused-vars:0*/
-
-/* Check for the alt properties on images */
-
-const cheerio = require('cheerio'),
-    canvas = require('canvas-wrapper');
+/* Check for the alt attributes on images */
 
 module.exports = (course, stepCallback) => {
     course.addModuleReport('check-alt-property');
-    var $,
-        imgsNoAlt = [],
-        url = '/api/v1/courses/:' + course.info.courseId + '/pages',
-        getPages = canvas.get(url, function (err, pages) {
-            if (err) {
-                course.throwErr('check-alt-property', err);
-                return;
-            }
-            console.log('pages:', pages)
-            return pages;
+    /*Only want to look through pages that are HTML. not any web files such as js or jpgs.*/
+    function checkHTML(pages) {
+        pages.filter(function (page) {
+            return (page.ext === '.html');
         });
-    var allImages = getPages.map(function (pages) {
-            return pages.filter('img');
-        }),
-        noAlts = allImages.filter(function (image) {
-            if (!$('img').hasClass('alt')) {
-                console.log('noAlt found!', image)
-                imgsNoAlt.concat(image)
+        console.log('PAGES:', pages)
+    }
+
+    var pages = course.content,
+        noAltImages = [];
+
+    pages.filter(function (page) {
+        return (page.ext === '.html');
+    });
+
+    pages.forEach(function (page, index) {
+        var $ = page.dom;
+        $('html body img').each(function (i, elem) {
+            if (!$(elem).attr('alt')) {
+                noAltImages.push({
+                    course: course.info.D2LOU,
+                    filename: page.name,
+                    image: $(elem).attr('src')
+                });
             }
         });
+    });
+
+    course.success('check-alt-property', 'retrieved images with no alt attribute');
+    console.log('Final images to check:', noAltImages)
+    course.newInfo('no-alt-images', noAltImages)
     stepCallback(null, course);
-    return noAlts;
 };
