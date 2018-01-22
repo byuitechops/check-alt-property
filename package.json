@@ -5,7 +5,8 @@
     "main": "main.js",
     "dependencies": {
         "canvas-wrapper": "git+https://github.com/byuitechops/Canvas-wrapper.git",
-        "child-development-kit": "github:byuitechops/child-development-kit"
+        "child-development-kit": "github:byuitechops/child-development-kit",
+        "csv-to-table": "git+https://github.com/byuitechops/csv-to-table.git"
     },
     "devDependencies": {
         "async": "^2.6.0",
@@ -25,5 +26,5 @@
         "url": "https://github.com/byuitechops/check-alt-property/issues"
     },
     "homepage": "https://github.com/byuitechops/check-alt-property#readme",
-    "childType": "preImport"
+    "childType": "postImport"
 }
