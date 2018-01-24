@@ -47,8 +47,8 @@ module.exports = (course, stepCallback) => {
                     image = $(image);
                     if (!(image).attr('alt')) {
                         course.log('Images without alt text', {
-                            filename: fullPage.title,
-                            source: image.attr('src')
+                            'filename': `${fullPage[0].title}`,
+                            'source': `${image.attr('src')}`
                         });
                     }
                 });
