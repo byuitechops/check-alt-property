@@ -1,6 +1,5 @@
 /*eslint-env node, es6*/
-/*eslint no-console:0*/
-/*eslint no-undef:0*/
+/*eslint no-console:1*/
 /*eslint no-unused-vars:0*/
 /* PostImport file for checking for the alt attributes on images */
 
@@ -13,66 +12,63 @@ const canvas = require('canvas-wrapper'),
     csvToTable = require('csv-to-table');
 
 module.exports = (course, stepCallback) => {
-    courseId = course.info.canvasOU;
+    var courseId = course.info.canvasOU;
 
     function beginAPI(callbackOne) {
         canvas.getPages(courseId, function (err, pages) {
             if (err) {
                 callbackOne(err, null);
-                course.throwErr(err);
+                course.error(err);
             }
             callbackOne(null, pages);
         });
     }
 
     function checkAlt(pages, callbackTwo) {
-        var noAltImages = [],
-            //filter to ids
-            pageIds = pages.map(function (page) {
-                return page.page_id;
-            });
+        //filter to ids
+        var pageIds = pages.map(function (page) {
+            return {
+                title: page.title,
+                id: page.page_id
+            }
+        });
 
-        function readPages(id, readPagesCb) {
+        function readPages(page, readPagesCb) {
             //foreach id get the page by API
-            canvas.get(`/api/v1/courses/${course.info.canvasOU}/pages/${id}`, function (err, page) {
+            canvas.get(`/api/v1/courses/${course.info.canvasOU}/pages/${page.id}`, function (err, fullPage) {
                 if (err) {
                     readPagesCb(err, null)
                     return;
                 }
                 //get request wraps page obj in an array, so need to specify in order to get the string itself
-                var $ = cheerio.load(page[0].body),
+                var $ = cheerio.load(fullPage[0].body),
                     images = $('img');
                 images.each(function (i, image) {
                     image = $(image);
-                    console.log('IMAGE FILE', image.title)
                     if (!(image).attr('alt')) {
-                        noAltImages.push({
-                            canvasId: course.info.canvasOU,
+                        course.log('Images without alt text', {
+                            filename: fullPage.title,
                             source: image.attr('src')
                         });
                     }
                 });
-                readPagesCb()
+                readPagesCb();
             });
         }
-        asyncLib.each(pageIds, readPages, function (err, images) {
-            callbackTwo(null, noAltImages);
+        asyncLib.each(pageIds, readPages, function (err) {
+            if (err) {
+                callbackTwo(err, null);
+                return;
+            }
+            callbackTwo(null);
         });
     }
 
-    asyncLib.waterfall([beginAPI, checkAlt], function (err, result) {
+    asyncLib.waterfall([beginAPI, checkAlt], function (err) {
         if (err) {
-            course.throwErr('check-alt-property', err)
+            course.error(err);
         }
+
         stepCallback(null, course);
-    })
-    //write a csv of noAltImages
-    /*var fileName = 'Missing-Alt-Text',
-    path = pathLib.resolve('.', 'noAltImages');
-fs.mkdirSync(path);
-var newPath = pathLib.resolve(path, '\\' + fileName),
-    columns = ['Canvas Id', 'Image'],
-    finalImages = dsv.csvFormat(noAltImages, columns);
-fs.writeFileSync(fileName + '.csv', finalImages);
-csvToTable.fromArray(noAltImages, columns, false, true, fileName)*/
+    });
 };

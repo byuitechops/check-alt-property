@@ -7,7 +7,8 @@
         "canvas-wrapper": "git+https://github.com/byuitechops/Canvas-wrapper.git",
         "child-development-kit": "github:byuitechops/child-development-kit",
         "csv-to-table": "git+https://github.com/byuitechops/csv-to-table.git",
-        "electron": "^1.8.1"
+        "electron": "^1.8.1",
+        "path": "^0.12.7"
     },
     "devDependencies": {
         "async": "^2.6.0",
