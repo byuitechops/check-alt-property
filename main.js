@@ -27,6 +27,8 @@ module.exports = (course, stepCallback) => {
                     readPagesCb(null);
                     return;
                 }
+                // course.message(`Checking ${page.title} for invalid alt attributes`);
+
                 // get request wraps page obj in an array, so need to specify in order to get the string itself
                 var $ = cheerio.load(fullPage[0].body),
                     images = $('img');
@@ -36,8 +38,9 @@ module.exports = (course, stepCallback) => {
                     var alt = (image).attr('alt');
                     if (!alt || alt === '') {
                         course.log('Images without alt text', {
-                            'filename': `${fullPage[0].title}`,
-                            'source': `${image.attr('src')}`
+                            'Filename': `${fullPage[0].title}`,
+                            'Page URL': `https://byui.instructure.com/courses/${course.info.canvasOU}/pages/${page.id}`,
+                            'Image Source': `${image.attr('src')}`
                         });
                     }
                 });
