@@ -30,14 +30,14 @@ module.exports = (course, stepCallback) => {
             return {
                 title: page.title,
                 id: page.page_id
-            }
+            };
         });
 
         function readPages(page, readPagesCb) {
             //foreach id get the page by API
             canvas.get(`/api/v1/courses/${course.info.canvasOU}/pages/${page.id}`, function (err, fullPage) {
                 if (err) {
-                    readPagesCb(err, null)
+                    readPagesCb(err, null);
                     return;
                 }
                 //get request wraps page obj in an array, so need to specify in order to get the string itself
@@ -56,7 +56,7 @@ module.exports = (course, stepCallback) => {
                 readPagesCb();
             });
         }
-        asyncLib.each(pageIds, readPages, function (err) {
+        asyncLib.eachLimit(pageIds, 10, readPages, function (err) {
             if (err) {
                 callbackTwo(err, null);
                 return;
