@@ -1,15 +1,9 @@
 /*eslint-env node, es6*/
-/*eslint no-console:1*/
-/*eslint no-unused-vars:0*/
 /* PostImport file for checking for the alt attributes on images */
 
 const canvas = require('canvas-wrapper'),
     cheerio = require('cheerio'),
-    asyncLib = require('async'),
-    fs = require('fs'),
-    dsv = require('d3-dsv'),
-    pathLib = require('path'),
-    csvToTable = require('csv-to-table');
+    asyncLib = require('async');
 
 module.exports = (course, stepCallback) => {
     var courseId = course.info.canvasOU;
