@@ -12,31 +12,25 @@ module.exports = (course, stepCallback) => {
         canvas.getPages(courseId, function (err, pages) {
             if (err) {
                 callbackOne(err, null);
-                course.error(err);
+                return;
             }
             callbackOne(null, pages);
         });
     }
 
     function checkAlt(pages, callbackTwo) {
-        //filter to ids
-        var pageIds = pages.map(function (page) {
-            return {
-                title: page.title,
-                id: page.page_id
-            };
-        });
-
         function readPages(page, readPagesCb) {
-            //foreach id get the page by API
+            // foreach id get the page by API
             canvas.get(`/api/v1/courses/${course.info.canvasOU}/pages/${page.id}`, function (err, fullPage) {
                 if (err) {
-                    readPagesCb(err, null);
+                    course.error(err);
+                    readPagesCb(null);
                     return;
                 }
-                //get request wraps page obj in an array, so need to specify in order to get the string itself
+                // get request wraps page obj in an array, so need to specify in order to get the string itself
                 var $ = cheerio.load(fullPage[0].body),
                     images = $('img');
+
                 images.each(function (i, image) {
                     image = $(image);
                     var alt = (image).attr('alt');
@@ -50,6 +44,15 @@ module.exports = (course, stepCallback) => {
                 readPagesCb();
             });
         }
+
+        // filter to ids
+        var pageIds = pages.map(function (page) {
+            return {
+                title: page.title,
+                id: page.page_id
+            };
+        });
+
         asyncLib.eachLimit(pageIds, 10, readPages, function (err) {
             if (err) {
                 callbackTwo(err, null);
@@ -59,7 +62,11 @@ module.exports = (course, stepCallback) => {
         });
     }
 
-    asyncLib.waterfall([beginAPI, checkAlt], function (err) {
+    asyncLib.waterfall([
+        beginAPI,
+        checkAlt
+    ],
+    function (err) {
         if (err) {
             course.error(err);
         }
