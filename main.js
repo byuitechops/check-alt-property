@@ -39,7 +39,7 @@ module.exports = (course, stepCallback) => {
                     if (!alt || alt === '') {
                         course.log('Images without alt text', {
                             'Filename': `${fullPage[0].title}`,
-                            'Page URL': `https://byui.instructure.com/courses/${course.info.canvasOU}/pages/${page.id}`,
+                            'Page URL': `https://${course.info.domain}.instructure.com/courses/${course.info.canvasOU}/pages/${page.id}`,
                             'Image Source': `${image.attr('src')}`
                         });
                     }
