@@ -12,7 +12,7 @@ Check alternative text properties from html pages in canvas to generate a report
 npm install check-alt-property
 Run inside of the d2l-to-canvas-conversion-tool
 
-##Outputs
+## Outputs
 course.log's all images that do not have an alt text property
 
 | Option | Type | Location |
